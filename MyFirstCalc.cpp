@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include "Calculator.h"
@@ -6,8 +7,16 @@ using namespace std;
 
 vector<string> myanswers;
 
+void UserInfo()
+{
+    string name;
+    cout << "Enter your Name: " << endl;
+    cin >> name;
+    myanswers.push_back(name);
+}
 void Run()
 {
+    UserInfo();
     Calculator Calc;
     bool doMore = true;
 
@@ -28,19 +37,19 @@ void Run()
         {
         case '+':
             // code block
-            answer = Calc.Add(x,y);
+            answer = Calc.Add(x, y);
             break;
         case '-':
             // code block
-            answer = Calc.Subtract(x,y);
+            answer = Calc.Subtract(x, y);
             break;
         case '*':
             // code block
-            answer = Calc.Multiply(x,y);
+            answer = Calc.Multiply(x, y);
             break;
         case '/':
             // code block
-            answer = Calc.Divide(x,y);
+            answer = Calc.Divide(x, y);
             break;
         default:
             // code block
@@ -51,7 +60,7 @@ void Run()
         cout << "Would you like to do more math? y/n" << endl;
         cin >> cont;
 
-        string fullanswer = to_string(x).substr(0, to_string(x).find(".")+3) + " " + operation + " " + to_string(y).substr(0, to_string(y).find(".")+3) + " = " + to_string(answer).substr(0, to_string(answer).find(".")+3);
+        string fullanswer = to_string(x).substr(0, to_string(x).find(".") + 3) + " " + operation + " " + to_string(y).substr(0, to_string(y).find(".") + 3) + " = " + to_string(answer).substr(0, to_string(answer).find(".") + 3);
 
         myanswers.push_back(fullanswer);
 
@@ -60,22 +69,79 @@ void Run()
             doMore = false;
         }
     }
-}
-void Show()
-{
     cout << "Calculations completed: " << endl;
     for (int i = 0; i < myanswers.size(); i++)
     {
         cout << myanswers[i] << endl;
     }
 }
+void Save()
+{
+    // Create and open a text file
+    ofstream MyHistory("calculations.txt", ios_base::app);
+
+    // Write to the file
+    for (int i = 0; i < myanswers.size(); i++)
+    {
+        MyHistory << myanswers[i] << endl;
+    }
+    MyHistory << endl;
+    // Close the file
+    MyHistory.close();
+    myanswers.clear();
+}
+
+void Show()
+{
+    string myLine;
+
+    // Read from the text file
+    ifstream MyHistory("calculations.txt");
+
+    if (MyHistory)
+    {
+        while (getline(MyHistory, myLine))
+        {
+            // Output the text from the file
+            cout << myLine << endl;
+            // Close the file
+            
+        }
+        MyHistory.close();
+
+    }
+    cout << endl;
+}
+void Menu()
+{
+    int choice = 0;
+    while (choice < 3)
+    {
+        cout << "Enter a number: " << endl
+             << "1. View saved Calculations" << endl
+             << "2. Make new Calculations" << endl
+             << "3. Exit" << endl;
+        cin >> choice;
+        cout << endl;
+        switch (choice)
+        {
+        case 1:
+            Show();
+            break;
+        case 2:
+            Run();
+            Save();
+            break;
+        }
+    }
+}
+
 int main()
 {
     // IN TERMINAL
     //   g++ -o Calc  MyFirstCalc.cpp Calculator.cpp
     //   ./Calc
+    Menu();
 
-    Run();
-    Show();
     return 0;
 }
